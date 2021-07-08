@@ -2,39 +2,71 @@ import Vue from 'vue'
 import App from './App.vue'
 
 /**
+ * !important
  * before import/require `jsflagr` we need to config webpack
  * check vue.config.file
  */
 
-var Jsflagr = require('jsflagr');
+const Jsflagr = require('jsflagr')
 
 const flagrClient = new Jsflagr.ApiClient()
 
 /**
- * override basePath and defaultHeaders
+ * Setup a custom base path/URI to connect to self-hosted Flagr server
  */
 flagrClient.basePath = process.env.VUE_APP_FLAGR_BASEPATH
+
+/**
+ * todo: Learn what auth method/service the self-hosted Flagr use?
+ * ? Are all route protected?
+ */
 flagrClient.defaultHeaders = {
-  Authorization: process.env.VUE_APP_FLAGR_AUTH 
+  Authorization: process.env.VUE_APP_FLAGR_AUTH
 }
 
-const flagrEvaluation = new Jsflagr.EvaluationApi(flagrClient)
+const getFeatureContext = async () => {
 
-// var flagID = 1; // {Number} numeric ID of the flag
+  /**
+ * Create new API instance for getting Evaluation data
+ */
+  const apiInstance = new Jsflagr.EvaluationApi(flagrClient)
 
-var body = Jsflagr.EvalContext.constructFromObject({
- flagID: 1
-});
 
-var callback = function(error, data, /* response */) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-};
+  /**
+   * To use postEvaluationBatch, we need to add parameters
+   * read more: https://checkr.github.io/flagr/api_docs/#operation/postEvaluationBatch
+   */
+  const body = new Jsflagr.EvaluationBatchRequest.constructFromObject(
+    {
+      "entities": [{}],
+      "flagTags": [
+        process.env.VUE_APP_FLAGR_TAGS
+      ],
+    }
+  )
 
-flagrEvaluation.postEvaluation(body, callback)
+  apiInstance.postEvaluationBatch(body, (error, data) => {
+    if (error) {
+      console.error(error)
+    } else {
+      return data
+    }
+    return {}
+  })
+}
+
+/**
+ * TODO:
+ * - need to find the best way to store this data
+ */
+const featureContext = getFeatureContext()
+
+/**
+ * ? How the clients know when something is updated on Flagr server?
+ */
+
+
+console.log(featureContext)
 
 Vue.config.productionTip = false
 
