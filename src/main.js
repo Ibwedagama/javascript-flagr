@@ -24,7 +24,7 @@ flagrClient.defaultHeaders = {
   Authorization: process.env.VUE_APP_FLAGR_AUTH
 }
 
-const getFeatureContext = async () => {
+const getFeatureContext = () => {
 
   /**
  * Create new API instance for getting Evaluation data
@@ -49,9 +49,8 @@ const getFeatureContext = async () => {
     if (error) {
       console.error(error)
     } else {
-      return data
+      console.log(data)
     }
-    return {}
   })
 }
 
@@ -59,14 +58,12 @@ const getFeatureContext = async () => {
  * TODO:
  * - need to find the best way to store this data
  */
-const featureContext = getFeatureContext()
+getFeatureContext()
 
 /**
  * ? How the clients know when something is updated on Flagr server?
  */
 
-
-console.log(featureContext)
 
 Vue.config.productionTip = false
 
