@@ -1,71 +1,56 @@
-/**
- * !important
- * before import/require `jsflagr` we need to config webpack
- * check vue.config.file
- */
-
 const Jsflagr = require('jsflagr')
 
 const flagrClient = new Jsflagr.ApiClient()
 
-/**
- * Setup a custom base path/URI to connect to self-hosted Flagr server
- */
 flagrClient.basePath = process.env.VUE_APP_FLAGR_BASEPATH
 
-/**
- * todo: Learn what auth method/service the self-hosted Flagr use?
- * ? Are all route protected?
- */
 flagrClient.defaultHeaders = {
   Authorization: process.env.VUE_APP_FLAGR_AUTH
 }
 
-const getFeatureFromFlagrAPI = () => {
-
-  /**
-  * Create new API instance for getting Evaluation data
-  */
+const getBatchEvaluationFromFlagr = (flagKeys) => {
   const apiInstance = new Jsflagr.EvaluationApi(flagrClient)
-
-
-  /**
-   * To use postEvaluationBatch, we need to add parameters
-   * read more: https://checkr.github.io/flagr/api_docs/#operation/postEvaluationBatch
-   */
-  const body = new Jsflagr.EvaluationBatchRequest.constructFromObject( 
+  const body = new Jsflagr.EvaluationBatchRequest.constructFromObject(
     {
       "entities": [{}],
-      "flagTags": [
-        process.env.VUE_APP_FLAGR_TAGS
-      ],
+      "flagKeys": flagKeys
     }
   )
 
   return new Promise((resolve, reject) => {
-    apiInstance.postEvaluationBatch(body, (error, data) => {
+    apiInstance.postEvaluationBatch(body, (error, data, response) => {
       if (error) {
         reject(error)
       } else {
-        resolve(data)
+        resolve(data, response)
       }
     })
   })
-
 }
 
-const getFlags = async () => {
-  const feature = await getFeatureFromFlagrAPI()
-  return feature.evaluationResults 
+const getFlagsFromFlagr = () => {
+  const apiInstance = new Jsflagr.FlagApi(flagrClient)
+  const opts = {
+    tags: process.env.VUE_APP_FLAGR_TAGS
+  }
+
+  return new Promise((resolve, reject) => {
+    apiInstance.findFlags(opts, (error, data, response) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data, response)
+      }
+    })
+  })
 }
 
-export default getFlags
+export const postEvaluationBatch = async (flagKeys) => {
+  const feature = await getBatchEvaluationFromFlagr(flagKeys)
+  return feature.evaluationResults
+}
 
-/**
- * TODO:
- * - need to find the best way to store this data
- */
-
-/**
- * ? How the clients know when something is updated on Flagr server?
- */
+export const findFlags = async () => {
+  const flags = await getFlagsFromFlagr()
+  return flags
+}

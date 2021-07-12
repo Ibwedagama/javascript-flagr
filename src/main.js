@@ -1,22 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
-import getFlags from './utils/flagr'
+import store from './store'
 
 Vue.config.productionTip = false
 
 new Vue({
-  data() {
-    return {
-      features: null,
-    }
-  },
   async created() {
-    this.features = await getFlags()
+   this.$store.dispatch('initFlagr')
   },
-  watch: {
-    features: function () {
-      console.log(this.features)
-    }
-  },
+  store,
   render: h => h(App),
 }).$mount('#app')
