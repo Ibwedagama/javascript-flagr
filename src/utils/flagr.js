@@ -8,14 +8,9 @@ flagrClient.defaultHeaders = {
   Authorization: process.env.VUE_APP_FLAGR_AUTH
 }
 
-const getBatchEvaluationFromFlagr = (flagKeys) => {
+const getEvaluation = (context) => {
   const apiInstance = new Jsflagr.EvaluationApi(flagrClient)
-  const body = new Jsflagr.EvaluationBatchRequest.constructFromObject(
-    {
-      "entities": [{}],
-      "flagKeys": flagKeys
-    }
-  )
+  const body = new Jsflagr.EvaluationBatchRequest.constructFromObject(context)
 
   return new Promise((resolve, reject) => {
     apiInstance.postEvaluationBatch(body, (error, data, response) => {
@@ -28,11 +23,9 @@ const getBatchEvaluationFromFlagr = (flagKeys) => {
   })
 }
 
-const getFlagsFromFlagr = () => {
+const getAllFlags = (context) => {
   const apiInstance = new Jsflagr.FlagApi(flagrClient)
-  const opts = {
-    tags: process.env.VUE_APP_FLAGR_TAGS
-  }
+  const opts = context
 
   return new Promise((resolve, reject) => {
     apiInstance.findFlags(opts, (error, data, response) => {
@@ -45,12 +38,13 @@ const getFlagsFromFlagr = () => {
   })
 }
 
-export const postEvaluationBatch = async (flagKeys) => {
-  const feature = await getBatchEvaluationFromFlagr(flagKeys)
+export const postEvaluationBatch = async (context) => {
+  const feature = await getEvaluation(context)
   return feature.evaluationResults
 }
 
-export const findFlags = async () => {
-  const flags = await getFlagsFromFlagr()
+export const findFlags = async (context) => {
+  console.log(context)
+  const flags = await getAllFlags(context)
   return flags
 }

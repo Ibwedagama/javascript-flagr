@@ -20,10 +20,13 @@ const getters = {
 
 const actions = {
   initFlagr: async ({ commit }) => {
-    const payload = await findFlags()
+    const payload = await findFlags({ tags: process.env.VUE_APP_FLAGR_TAGS })
     await commit('INIT_FLAGR', payload)
 
-    const evaluation = await postEvaluationBatch(state.enabledFlags)
+    const evaluation = await postEvaluationBatch({ 
+        entities: [{}],
+        flagKeys: state.enabledFlags 
+      })
     await commit('EVALUATE_FLAGR', evaluation)
   },
 }

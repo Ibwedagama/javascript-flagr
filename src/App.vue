@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <div v-if="flags.includes('testing-flag-1')" class="box">
-      <h1>Testing Flag 1</h1>
+    <div v-if="flagEvaluation.some(flag => flag.flagKey === 'fitur_artikel')" class="box">
+      <h1>Testing Fitur Kontak</h1>
     </div>
-    <div v-if="flags.includes('testing-flag-2')" class="box">
-      <h1>Testing Flag 2</h1>
+    <div v-if="flagEvaluation.some(flag => flag.flagKey === 'fitur_kontak')" class="box">
+      <h1>Testing Fitur Kontak</h1>
     </div>
     <!-- <div v-else>
       <p>Loading...</p>
