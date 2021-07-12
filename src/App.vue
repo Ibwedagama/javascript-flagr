@@ -1,15 +1,14 @@
 <template>
   <div id="app">
-    <div v-if="flagEvaluation.length">
-      <div v-for="flag in flagEvaluation" :key="flag.flagID" class="box">
-        <h1>{{ flag.flagKey }}</h1>
-        <p>Variant: {{flag.variantKey}}</p>
-        <p>Value: {{flag.variantAttachment}}</p>
-      </div>
+    <div v-if="flags.includes('testing-flag-1')" class="box">
+      <h1>Testing Flag 1</h1>
     </div>
-    <div v-else>
+    <div v-if="flags.includes('testing-flag-2')" class="box">
+      <h1>Testing Flag 2</h1>
+    </div>
+    <!-- <div v-else>
       <p>Loading...</p>
-    </div>
+    </div> -->
   </div>
 </template>
 

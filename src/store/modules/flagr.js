@@ -30,7 +30,7 @@ const actions = {
 
 const mutations = {
   INIT_FLAGR: (state, payload) => {
-    state.allFlags = payload
+    state.allFlags = payload.map(v => v.key)
     state.enabledFlags = payload.filter(v => v.enabled).map(v => v.key)
   },
 
